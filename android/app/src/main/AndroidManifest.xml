@@ -6,6 +6,7 @@
     <application
       android:name=".MainApplication"
       android:label="@string/APP_NAME"
+      android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
       android:icon="@mipmap/ic_launcher"
       android:roundIcon="@mipmap/ic_launcher_round"
       android:allowBackup="false"
