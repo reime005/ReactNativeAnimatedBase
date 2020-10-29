@@ -1,11 +1,5 @@
 import * as React from 'react';
-import { Text, View } from 'react-native';
-import {
-  NavigationContainer,
-  useIsFocused,
-  useNavigation,
-  useRoute,
-} from '@react-navigation/native';
+import { useIsFocused, useRoute } from '@react-navigation/native';
 import {
   BottomTabBarOptions,
   BottomTabNavigationOptions,
@@ -14,41 +8,37 @@ import {
 import { HomeScreen } from '../screens/HomeScreen';
 import { useTheme } from 'styled-components';
 import { HomeIcon } from '../components/SVG/HomeIcon';
-import Animated, { sequence, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { SettingsScreen } from '../screens/SettingsScreen';
+import { SettingsIcon } from '../components/SVG/SettingsIcon';
+import { BottomRoute, bottomRoutes } from './routes';
 
 const Tab = createBottomTabNavigator();
 
 export const BottomNavigator = () => {
   return (
     <Tab.Navigator screenOptions={screenOptions} tabBarOptions={tabBarOptions}>
-      <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Settings" component={HomeScreen} />
+      <Tab.Screen name={bottomRoutes.home} component={HomeScreen} />
+      <Tab.Screen name={bottomRoutes.settings} component={SettingsScreen} />
     </Tab.Navigator>
   );
 };
 
-const NavIcon = ({ state, descriptors, navigation }: any) => {
+const NavIcon = () => {
   const route = useRoute();
   const isFocused = useIsFocused();
-  const { primaryColor, secondaryColor } = useTheme();
+  const { focusedIconColor, unFocusedIconColor } = useTheme();
 
-  const nav = useNavigation();
+  const name = route.name as BottomRoute;
 
-  const backgroundColor = isFocused ? primaryColor : secondaryColor;
-
-  const scale = useSharedValue(2);
+  const backgroundColor = isFocused ? focusedIconColor : unFocusedIconColor;
 
   return (
     <TouchableOpacity
-      activeOpacity={1}
-      onPress={() => {
-        scale.value = sequence(
-          withTiming(3, { duration: 200 }),
-          withTiming(2, { duration: 100 })
-        );
-      }}>
-      <HomeIcon strokeWidth={scale.value} />
+      activeOpacity={0.8}
+      style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      {name === 'home' && <HomeIcon fill={backgroundColor} />}
+      {name === 'settings' && <SettingsIcon fill={backgroundColor} />}
     </TouchableOpacity>
   );
 };
@@ -60,4 +50,5 @@ const screenOptions: BottomTabNavigationOptions = {
 const tabBarOptions: BottomTabBarOptions = {
   activeTintColor: 'tomato',
   inactiveTintColor: 'gray',
+  showLabel: false
 };

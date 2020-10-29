@@ -2,7 +2,7 @@ import React from 'react';
 import { useTheme } from 'styled-components';
 import Animated from 'react-native-reanimated';
 
-import _SVG from '../../assets/svg/home.svg';
+import _SVG from '../../assets/svg/settings.svg';
 
 import { SVGWrapperProps, defaultSVGProps } from './SVGWrapper';
 
@@ -14,13 +14,13 @@ class SVG extends React.Component {
 
 const Anim = Animated.createAnimatedComponent(SVG);
 
-export const HomeIcon = (props: SVGWrapperProps) => {
+export const SettingsIcon = (props: SVGWrapperProps) => {
   const theme = useTheme();
 
   return (
     <Anim
       style={{}}
-      {...{ ...defaultSVGProps, color: theme.primaryColor, ...props }}
+      {...{ ...defaultSVGProps, fill: theme.primaryColor, ...props }}
     />
   );
 };

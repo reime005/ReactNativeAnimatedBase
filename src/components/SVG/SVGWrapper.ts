@@ -1,12 +1,12 @@
 export interface SVGWrapperProps {
   width?: number;
   height?: number;
-  color?: string;
+  fill?: string;
 }
 
 export const defaultSVGProps: SVGWrapperProps = {
-  width: 20,
-  height: 20,
-  color: 'grey'
+  width: 24,
+  height: 24,
+  fill: 'grey'
 }
 
