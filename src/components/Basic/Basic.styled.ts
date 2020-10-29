@@ -1,9 +1,7 @@
-import { Animated as A } from 'react-native';
-import Animated from 'react-native-reanimated';
 import styled from 'styled-components/native';
 
 export const BaseText = styled.Text`
-  color: ${props => props.theme.mainFont};
+  color: ${(props) => props.theme.mainFont};
   font-size: 14px;
 `;
 

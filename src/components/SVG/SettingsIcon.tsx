@@ -4,7 +4,11 @@ import Animated from 'react-native-reanimated';
 
 import _SVG from '../../assets/svg/settings.svg';
 
-import { SVGWrapperProps, defaultSVGProps } from './SVGWrapper';
+import {
+  SVGWrapperProps,
+  defaultSVGProps,
+  transformSVGProps,
+} from './svgProps';
 
 class SVG extends React.Component {
   render() {
@@ -20,7 +24,11 @@ export const SettingsIcon = (props: SVGWrapperProps) => {
   return (
     <Anim
       style={{}}
-      {...{ ...defaultSVGProps, fill: theme.primaryColor, ...props }}
+      {...{
+        ...transformSVGProps({ ...defaultSVGProps, ...props }),
+        fill: theme.primaryColor,
+        ...props,
+      }}
     />
   );
 };
