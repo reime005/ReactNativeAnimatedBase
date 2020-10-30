@@ -1,6 +1,7 @@
 {
-  "name": "ReactNativeBase",
+  "name": "ReactNativeAnimatedBase",
   "version": "0.0.1",
+  "description": "📲 React Native Basic Template with important basic libraries to get started easily.",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -12,6 +13,7 @@
   },
   "dependencies": {
     "@n1ru4l/use-async-effect": "1.2.4",
+    "@react-native-async-storage/async-storage": "^1.13.1",
     "@react-native-community/masked-view": "^0.1.10",
     "@react-navigation/bottom-tabs": "^5.10.0",
     "@react-navigation/native": "^5.8.0",
@@ -45,6 +47,7 @@
     "git-cz": "^4.7.1",
     "husky": "^4.3.0",
     "jest": "^25.1.0",
+    "jest-styled-components": "^7.0.3",
     "lint-staged": "^10.5.0",
     "metro-react-native-babel-preset": "^0.59.0",
     "react-native-svg-transformer": "^0.14.3",

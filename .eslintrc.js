@@ -3,4 +3,5 @@ module.exports = {
   extends: '@react-native-community',
   parser: '@typescript-eslint/parser',
   plugins: ['@typescript-eslint'],
+  globals: { "delay": false, "jest": false },
 };
