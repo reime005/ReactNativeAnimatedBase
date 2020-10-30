@@ -1,7 +1,6 @@
 import React from 'react';
 import { useTheme } from 'styled-components';
 import Animated from 'react-native-reanimated';
-
 import _SVG from '../../assets/svg/home.svg';
 
 import {

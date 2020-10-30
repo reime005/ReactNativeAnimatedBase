@@ -6,6 +6,7 @@ import Animated, {
   useAnimatedStyle,
   useAnimatedGestureHandler,
   interpolate,
+  Extrapolate,
 } from 'react-native-reanimated';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 
@@ -16,7 +17,7 @@ export const DragAndSnap = () => {
   };
 
   const gestureHandler = useAnimatedGestureHandler({
-    onStart: (_, ctx) => {
+    onStart: (_, ctx: any) => {
       ctx.startX = translation.x.value;
       ctx.startY = translation.y.value;
     },
@@ -32,10 +33,10 @@ export const DragAndSnap = () => {
 
   const stylez = useAnimatedStyle(() => {
     const H = Math.round(
-      interpolate(translation.x.value, [0, 300], [0, 360], 'clamp')
+      interpolate(translation.x.value, [0, 300], [0, 360], Extrapolate.CLAMP)
     );
     const S = Math.round(
-      interpolate(translation.y.value, [0, 500], [100, 50], 'clamp')
+      interpolate(translation.y.value, [0, 500], [100, 50], Extrapolate.CLAMP)
     );
     const backgroundColor = `hsl(${H},${S}%,50%)`;
     return {

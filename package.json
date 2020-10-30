@@ -7,7 +7,8 @@
     "ios": "react-native run-ios",
     "start": "react-native start",
     "test": "jest",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "commit": "git-cz"
   },
   "dependencies": {
     "@n1ru4l/use-async-effect": "1.2.4",
@@ -41,14 +42,20 @@
     "@typescript-eslint/parser": "^2.27.0",
     "babel-jest": "^25.1.0",
     "eslint": "^6.5.1",
+    "git-cz": "^4.7.1",
+    "husky": "^4.3.0",
     "jest": "^25.1.0",
+    "lint-staged": "^10.5.0",
     "metro-react-native-babel-preset": "^0.59.0",
     "react-native-svg-transformer": "^0.14.3",
     "react-test-renderer": "16.13.1",
-    "typescript": "^3.8.3"
+    "typescript": "^4.0.5"
   },
   "jest": {
     "preset": "react-native",
+    "setupFiles": [
+      "./jest.setup.js"
+    ],
     "moduleFileExtensions": [
       "ts",
       "tsx",
@@ -57,5 +64,10 @@
       "json",
       "node"
     ]
+  },
+  "config": {
+    "commitizen": {
+      "path": "git-cz"
+    }
   }
 }

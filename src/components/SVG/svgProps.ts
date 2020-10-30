@@ -14,6 +14,6 @@ export const defaultSVGProps: SVGWrapperProps = {
 
 export const transformSVGProps = (props: SVGWrapperProps) => ({
   ...props,
-  width: (props.width ?? 1) * (props.scale ?? 1),
-  height: (props.height ?? 1) * (props.scale ?? 1),
+  width: (props.width || 1) * (props.scale || 1),
+  height: (props.height || 1) * (props.scale || 1),
 });
