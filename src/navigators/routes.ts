@@ -4,5 +4,5 @@ export const bottomRoutes: {
   [routeKey in BottomRoute]: BottomRoute;
 } = {
   home: 'home',
-  settings: 'settings'
-}
+  settings: 'settings',
+};

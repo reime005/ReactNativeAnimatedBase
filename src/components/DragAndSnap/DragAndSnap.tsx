@@ -16,10 +16,15 @@ export const DragAndSnap = () => {
     y: useSharedValue(0),
   };
 
+  const noop = () => {
+    'worklet';
+  };
+
   const gestureHandler = useAnimatedGestureHandler({
     onStart: (_, ctx: any) => {
       ctx.startX = translation.x.value;
       ctx.startY = translation.y.value;
+      noop();
     },
     onActive: (event, ctx) => {
       translation.x.value = ctx.startX + event.translationX;
@@ -33,10 +38,10 @@ export const DragAndSnap = () => {
 
   const stylez = useAnimatedStyle(() => {
     const H = Math.round(
-      interpolate(translation.x.value, [0, 300], [0, 360], Extrapolate.CLAMP)
+      interpolate(translation.x.value, [0, 300], [0, 360], Extrapolate.CLAMP),
     );
     const S = Math.round(
-      interpolate(translation.y.value, [0, 500], [100, 50], Extrapolate.CLAMP)
+      interpolate(translation.y.value, [0, 500], [100, 50], Extrapolate.CLAMP),
     );
     const backgroundColor = `hsl(${H},${S}%,50%)`;
     return {
@@ -67,5 +72,4 @@ export const DragAndSnap = () => {
       </PanGestureHandler>
     </View>
   );
-}
-
+};

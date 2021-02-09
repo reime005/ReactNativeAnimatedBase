@@ -11,8 +11,7 @@ export const SettingsScreen = () => {
     <S.BasePage>
       <S.BaseText>{t(`screen.${name}.title`)}</S.BaseText>
 
-      <S.BaseScroll contentContainerStyle={{ flex: 1 }}>
-      </S.BaseScroll>
+      <S.BaseScroll contentContainerStyle={{ flex: 1 }} />
     </S.BasePage>
   );
 };

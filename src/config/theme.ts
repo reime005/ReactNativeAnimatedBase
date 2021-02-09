@@ -1,16 +1,5 @@
 import { DefaultTheme } from 'styled-components/native';
 
-declare module 'styled-components' {
-  export interface DefaultTheme {
-    primaryColor: string;
-    secondaryColor: string;
-    searchBackgroundColor: string;
-    focusedIconColor: string;
-    unFocusedIconColor: string;
-    mainFont: string;
-  }
-}
-
 export const lightTheme: DefaultTheme = {
   primaryColor: 'rgb(127, 90, 240)',
   focusedIconColor: '#ff884d',

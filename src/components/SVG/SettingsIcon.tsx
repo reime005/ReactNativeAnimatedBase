@@ -22,7 +22,6 @@ export const SettingsIcon = (props: SVGWrapperProps) => {
 
   return (
     <Anim
-      style={{}}
       {...{
         ...transformSVGProps({ ...defaultSVGProps, ...props }),
         fill: theme.primaryColor,

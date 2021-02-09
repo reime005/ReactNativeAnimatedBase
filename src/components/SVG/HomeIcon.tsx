@@ -22,7 +22,6 @@ export const HomeIcon = (props: SVGWrapperProps) => {
 
   return (
     <Anim
-      style={{}}
       {...{
         ...transformSVGProps({ ...defaultSVGProps, ...props }),
         color: theme.primaryColor,
