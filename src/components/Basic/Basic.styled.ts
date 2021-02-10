@@ -15,4 +15,5 @@ export const BasePage = styled.View`
   flex: 1;
   width: 100%;
   padding: 8px;
+  background-color: #fff;
 `;

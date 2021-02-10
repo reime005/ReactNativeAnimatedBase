@@ -8,5 +8,7 @@ declare module 'styled-components' {
     focusedIconColor: string;
     unFocusedIconColor: string;
     mainFont: string;
+    cancel: string;
+    send: string;
   }
 }
