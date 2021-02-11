@@ -56,10 +56,11 @@ const RIGHT = { r: 85, g: 138, b: 224 };
 const Anim = Animated.createAnimatedComponent(SVG);
 const AnimTouch = Animated.createAnimatedComponent(TouchableOpacity);
 
-export const MicIcon = (props: SVGWrapperProps) => {
+export const MicIcon = (props: any) => {
   const theme = useTheme();
 
-  const animLock = React.useRef<boolean>(false);
+  const animLock = useSharedValue(false);
+  const gestureStartedRef = React.useRef<boolean>(false);
   const timerRef = React.useRef<null | number>(null);
 
   const [recordingTime, setRecordingTime] = React.useState(0);
@@ -81,16 +82,6 @@ export const MicIcon = (props: SVGWrapperProps) => {
     y: useSharedValue(0),
   };
 
-  const stylez = useAnimatedStyle(() => {
-    return {
-      transform: [
-        {
-          translateX: translation.x.value,
-        },
-      ],
-    };
-  });
-
   const outerStyle = useAnimatedStyle(() => {
     const val = interpolate(
       translation.x.value,
@@ -99,7 +90,14 @@ export const MicIcon = (props: SVGWrapperProps) => {
       Animated.Extrapolate.CLAMP,
     );
 
+    // console.log(translation.x.value);
+
     return {
+      transform: [
+        {
+          translateX: translation.x.value,
+        },
+      ],
       backgroundColor: `rgba(243, 242, 252, ${val})`,
     };
   });
@@ -118,40 +116,48 @@ export const MicIcon = (props: SVGWrapperProps) => {
   });
 
   const resetLock = () => {
-    animLock.current = false;
+    console.log('reset lock');
+    animLock.value = false;
   };
 
   const setLock = () => {
-    animLock.current = true;
+    console.log('set lock');
+    animLock.value = true;
   };
 
   const toggleSend = () => {
     'worklet';
 
-    if (animLock.current) {
+    if (animLock.value) {
       return;
     }
 
-    setLock();
+    runOnJS(setLock)();
 
     translation.x.value = withSequence(
       withDelay(0, withSpring(positionRight, springConfig)),
-      withDelay(RESET_TIME_MS, withSpring(0, springConfig, runOnJS(resetLock))),
+      withDelay(
+        RESET_TIME_MS,
+        withSpring(0, springConfig, () => runOnJS(resetLock)()),
+      ),
     );
   };
 
   const toggleCancel = () => {
     'worklet';
 
-    if (animLock.current) {
+    if (animLock.value) {
       return;
     }
 
-    setLock();
+    runOnJS(setLock)();
 
     translation.x.value = withSequence(
       withDelay(0, withSpring(positionLeft, springConfig)),
-      withDelay(RESET_TIME_MS, withSpring(0, springConfig, runOnJS(resetLock))),
+      withDelay(
+        RESET_TIME_MS,
+        withSpring(0, springConfig, () => runOnJS(resetLock)()),
+      ),
     );
   };
 
@@ -198,42 +204,78 @@ export const MicIcon = (props: SVGWrapperProps) => {
   });
 
   const startTimer = () => {
-    console.warn('start');
+    console.log('starting timer');
+    timerRef.current = setInterval(() => setRecordingTime((t) => t + 1), 1000);
+  };
 
-    timerRef.current = setInterval(() => {
-      console.warn('tick');
+  const endTimer = () => {
+    console.log('ending timer');
+    clearInterval(timerRef.current || 0);
+  };
 
-      setRecordingTime(recordingTime + 1);
-    });
+  const gestureStarted = () => {
+    gestureStartedRef.current = true;
+  };
+
+  const gestureEnded = () => {
+    gestureStartedRef.current = false;
   };
 
   React.useEffect(() => {
     return () => {
-      clearInterval(timerRef.current || 0);
+      endTimer();
     };
   }, []);
 
   const gestureHandler = useAnimatedGestureHandler(
     {
       onStart: (_, ctx: any) => {
-        if (animLock.current) {
+        runOnJS(gestureStarted)();
+
+        if (animLock.value) {
           return;
         }
-
-        runOnJS(startTimer);
 
         ctx.startX = translation.x.value;
       },
       onActive: (event, ctx) => {
-        if (animLock.current) {
+        if (animLock.value) {
           return;
         }
 
-        const diff = ctx.startX + event.translationX;
+        let diff = Math.ceil(ctx.startX + event.translationX);
 
-        if (diff >= positionRight || diff <= positionLeft) {
+        if (diff > positionRight) {
+          translation.x.value = positionRight;
+          console.warn('potential over draw right');
+          return;
+        } else if (diff < positionLeft) {
+          translation.x.value = positionLeft;
+          console.warn('potential over draw left');
           return;
         }
+
+        console.log({ diff });
+
+        // if (diff >= positionRight * FACTOR_OVER) {
+        //   toggleSend();
+        //   return;
+        // } else if (diff <= positionLeft * FACTOR_OVER) {
+        //   toggleCancel();
+        //   return;
+        // }
+
+        translation.x.value = diff;
+      },
+      onEnd: (event, ctx) => {
+        if (animLock.value) {
+          return;
+        }
+
+        runOnJS(endTimer)();
+
+        let diff = ctx.startX + event.translationX;
+        diff *= 1.1;
 
         if (diff >= positionRight * FACTOR_OVER) {
           toggleSend();
@@ -243,29 +285,17 @@ export const MicIcon = (props: SVGWrapperProps) => {
           return;
         }
 
-        translation.x.value = withSpring(diff, springConfig);
-      },
-      onEnd: (event, ctx) => {
-        if (animLock.current) {
-          return;
-        }
-
-        const diff = ctx.startX + event.translationX;
-
-        if (diff >= positionRight * FACTOR_OVER) {
-          return;
-        } else if (diff <= positionLeft * FACTOR_OVER) {
-          return;
-        }
-
         translation.x.value = withSpring(0, springConfig);
+      },
+      onFinish: () => {
+        runOnJS(gestureEnded)();
       },
     },
     [barWidth],
   );
 
   return (
-    <View style={[styles.center]}>
+    <View style={[styles.center, styles.container]}>
       <View
         style={[
           styles.bar,
@@ -292,7 +322,7 @@ export const MicIcon = (props: SVGWrapperProps) => {
         </View>
 
         <PanGestureHandler onGestureEvent={gestureHandler}>
-          <AnimTouch
+          <Animated.View
             style={[
               {
                 zIndex: 1,
@@ -302,7 +332,6 @@ export const MicIcon = (props: SVGWrapperProps) => {
                 height: transformedProps.height * 4,
               },
               styles.center,
-              stylez,
               outerStyle,
             ]}>
             <AnimTouch
@@ -318,6 +347,19 @@ export const MicIcon = (props: SVGWrapperProps) => {
                 middleStyle,
               ]}>
               <AnimTouch
+                onPressIn={() => {
+                  if (!animLock.value) {
+                    startTimer();
+                  }
+                }}
+                onPressOut={(e) => {
+                  setTimeout(() => {
+                    //HACK...
+                    if (!gestureStartedRef.current) {
+                      endTimer();
+                    }
+                  }, 200);
+                }}
                 style={[
                   {
                     position: 'absolute',
@@ -336,7 +378,7 @@ export const MicIcon = (props: SVGWrapperProps) => {
                 />
               </AnimTouch>
             </AnimTouch>
-          </AnimTouch>
+          </Animated.View>
         </PanGestureHandler>
       </View>
 
@@ -361,7 +403,10 @@ const styles = StyleSheet.create({
     padding: 2,
     borderColor: '#ccc',
     marginHorizontal: 16,
-    marginVertical: 40,
+    marginVertical: 8,
+  },
+  container: {
+    margin: 32,
   },
   center: {
     justifyContent: 'center',
