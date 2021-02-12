@@ -56,7 +56,12 @@ const RIGHT = { r: 85, g: 138, b: 224 };
 const Anim = Animated.createAnimatedComponent(SVG);
 const AnimTouch = Animated.createAnimatedComponent(TouchableOpacity);
 
-export const MicIcon = (props: any) => {
+interface IMicIconProps extends SVGWrapperProps {
+  onStartTimer: () => void;
+  onEndTimer: (n: number) => void;
+}
+
+export const MicIcon = (props: IMicIconProps) => {
   const theme = useTheme();
 
   const animLock = useSharedValue(false);
@@ -90,8 +95,6 @@ export const MicIcon = (props: any) => {
       Animated.Extrapolate.CLAMP,
     );
 
-    // console.log(translation.x.value);
-
     return {
       transform: [
         {
@@ -116,16 +119,14 @@ export const MicIcon = (props: any) => {
   });
 
   const resetLock = () => {
-    console.log('reset lock');
     animLock.value = false;
   };
 
   const setLock = () => {
-    console.log('set lock');
     animLock.value = true;
   };
 
-  const toggleSend = () => {
+  const toggleTo = (n: number) => {
     'worklet';
 
     if (animLock.value) {
@@ -134,31 +135,22 @@ export const MicIcon = (props: any) => {
 
     runOnJS(setLock)();
 
-    translation.x.value = withSequence(
-      withDelay(0, withSpring(positionRight, springConfig)),
-      withDelay(
-        RESET_TIME_MS,
-        withSpring(0, springConfig, () => runOnJS(resetLock)()),
-      ),
+    translation.x.value = withSpring(n, springConfig);
+
+    translation.x.value = withDelay(
+      RESET_TIME_MS,
+      withSpring(0, springConfig, () => runOnJS(resetLock)()),
     );
   };
 
   const toggleCancel = () => {
     'worklet';
+    toggleTo(positionLeft);
+  };
 
-    if (animLock.value) {
-      return;
-    }
-
-    runOnJS(setLock)();
-
-    translation.x.value = withSequence(
-      withDelay(0, withSpring(positionLeft, springConfig)),
-      withDelay(
-        RESET_TIME_MS,
-        withSpring(0, springConfig, () => runOnJS(resetLock)()),
-      ),
-    );
+  const toggleSend = () => {
+    'worklet';
+    toggleTo(positionRight);
   };
 
   const innerStyle = useAnimatedStyle(() => {
@@ -204,12 +196,12 @@ export const MicIcon = (props: any) => {
   });
 
   const startTimer = () => {
-    console.log('starting timer');
+    props.onStartTimer();
     timerRef.current = setInterval(() => setRecordingTime((t) => t + 1), 1000);
   };
 
   const endTimer = () => {
-    console.log('ending timer');
+    props.onEndTimer(recordingTime);
     clearInterval(timerRef.current || 0);
   };
 
@@ -243,27 +235,20 @@ export const MicIcon = (props: any) => {
           return;
         }
 
-        let diff = Math.ceil(ctx.startX + event.translationX);
+        let diff = ctx.startX + event.translationX;
 
-        if (diff > positionRight) {
-          translation.x.value = positionRight;
-          console.warn('potential over draw right');
-          return;
-        } else if (diff < positionLeft) {
-          translation.x.value = positionLeft;
-          console.warn('potential over draw left');
+        if (typeof diff != 'number') {
           return;
         }
 
-        console.log({ diff });
-
-        // if (diff >= positionRight * FACTOR_OVER) {
-        //   toggleSend();
-        //   return;
-        // } else if (diff <= positionLeft * FACTOR_OVER) {
-        //   toggleCancel();
-        //   return;
-        // }
+        // prevent draw over border
+        if (diff >= positionRight) {
+          translation.x.value = positionRight;
+          return;
+        } else if (diff <= positionLeft) {
+          translation.x.value = positionLeft;
+          return;
+        }
 
         translation.x.value = diff;
       },
@@ -275,7 +260,6 @@ export const MicIcon = (props: any) => {
         runOnJS(endTimer)();
 
         let diff = ctx.startX + event.translationX;
-        diff *= 1.1;
 
         if (diff >= positionRight * FACTOR_OVER) {
           toggleSend();
@@ -306,14 +290,14 @@ export const MicIcon = (props: any) => {
           setBarWidth(nativeEvent.layout.width);
         }}>
         <View style={[styles.inner]}>
-          <AnimTouch style={[styles.center, styles.row]}>
+          <AnimTouch style={[styles.center, styles.row]} onPress={toggleCancel}>
             <CancelIcon scale={0.6} />
             <Text style={[styles.text, { color: theme.cancel, marginLeft: 4 }]}>
               cancel
             </Text>
           </AnimTouch>
 
-          <AnimTouch style={[styles.center, styles.row]}>
+          <AnimTouch style={[styles.center, styles.row]} onPress={toggleSend}>
             <Text style={[styles.text, { color: theme.send, marginRight: 4 }]}>
               send
             </Text>
@@ -382,7 +366,7 @@ export const MicIcon = (props: any) => {
         </PanGestureHandler>
       </View>
 
-      <View style={[styles.center, styles.row]}>
+      <View style={[styles.center, styles.row, { marginTop: 32 }]}>
         <View style={[styles.dot, { marginEnd: 4 }]} />
         <Text>{recordingTime}</Text>
       </View>
