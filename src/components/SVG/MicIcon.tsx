@@ -57,9 +57,24 @@ const Anim = Animated.createAnimatedComponent(SVG);
 const AnimTouch = Animated.createAnimatedComponent(TouchableOpacity);
 
 interface IMicIconProps extends SVGWrapperProps {
+  onSend: () => void;
+  onCancel: () => void;
   onStartTimer: () => void;
   onEndTimer: (n: number) => void;
 }
+
+const pad = (num: number): string => {
+  return ('0' + num).slice(-2);
+};
+
+const mmss = (secs: number) => {
+  let minutes = Math.floor(secs / 60);
+
+  secs = secs % 60;
+  minutes = minutes % 60;
+
+  return pad(minutes) + ':' + pad(secs);
+};
 
 export const MicIcon = (props: IMicIconProps) => {
   const theme = useTheme();
@@ -69,6 +84,7 @@ export const MicIcon = (props: IMicIconProps) => {
   const timerRef = React.useRef<null | number>(null);
 
   const [recordingTime, setRecordingTime] = React.useState(0);
+  const recordingTimeStr = mmss(recordingTime);
   const [isRecording, setIsRecording] = React.useState(false);
 
   const [barWidth, setBarWidth] = React.useState<number>(0);
@@ -146,11 +162,15 @@ export const MicIcon = (props: IMicIconProps) => {
   const toggleCancel = () => {
     'worklet';
     toggleTo(positionLeft);
+    runOnJS(setRecordingTime)(0);
+    runOnJS(props.onCancel)();
   };
 
   const toggleSend = () => {
     'worklet';
     toggleTo(positionRight);
+    runOnJS(setRecordingTime)(0);
+    runOnJS(props.onSend)();
   };
 
   const innerStyle = useAnimatedStyle(() => {
@@ -368,7 +388,7 @@ export const MicIcon = (props: IMicIconProps) => {
 
       <View style={[styles.center, styles.row, { marginTop: 32 }]}>
         <View style={[styles.dot, { marginEnd: 4 }]} />
-        <Text>{recordingTime}</Text>
+        <Text>{recordingTimeStr}</Text>
       </View>
     </View>
   );
