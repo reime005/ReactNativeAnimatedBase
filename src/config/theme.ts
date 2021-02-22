@@ -6,7 +6,12 @@ export const lightTheme: DefaultTheme = {
   unFocusedIconColor: '#cccccc',
   secondaryColor: '#666',
   searchBackgroundColor: '#fafafa',
-  mainFont: '#090909',
+  fontColors: {
+    light: '#fff',
+    primary: '#000',
+    regular: '#000',
+    subtle: '#000',
+  },
 };
 
 export const darkTheme: DefaultTheme = {
@@ -15,5 +20,10 @@ export const darkTheme: DefaultTheme = {
   unFocusedIconColor: '#cccccc',
   secondaryColor: '#cacaca',
   searchBackgroundColor: '#707070',
-  mainFont: '#090909',
+  fontColors: {
+    light: '#fff',
+    primary: '#fff',
+    regular: '#fff',
+    subtle: '#fff',
+  },
 };

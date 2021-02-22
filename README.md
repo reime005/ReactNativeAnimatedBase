@@ -18,11 +18,10 @@ This template provides the basic and necessary things you need for a React Nativ
 - 🗿 Persistence via [async-storage](https://github.com/react-native-async-storage/async-storage)
 - 🖥 Running lint & tests on staged git files (pre-commit) via [lint-staged](https://github.com/okonet/lint-staged) and [husky](https://github.com/typicode/husky)
 - ♦️ Icons from [material](https://material.io/resources/icons/?style=outline) and [feathericons](https://feathericons.com)
-- ℹ️ Simple, safe and fetch-cancellable effects powered by generator functions via [@n1ru4l/use-async-effect](https://github.com/n1ru4l/use-async-effect)
 - ℹ️ Styled components testing via [jest-styled-components](https://github.com/styled-components/jest-styled-components)
 - ℹ️ Hermes enabled
 
-# Build & Run
+## Build & Run
 
 Android:
 
@@ -31,3 +30,15 @@ Android:
 iOS:
 
     yarn ios
+
+## Storybook
+
+Basic Storybook is set up with support of switching the theme via `knobs` and a custom theme `decorator`.
+
+Run the following and open the app in the simulator/emulator:
+
+    yarn storybook
+
+You may need to commit in the very first line and comment out the rest of the file `/index.js`. This should how the storybook on your emulator/simulator.
+
+Then open `http://localhost:7007` to access the storybook. When using an Android emulator you may need to run `adb reverse tcp:7007 tcp:7007`.

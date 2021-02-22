@@ -1,6 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { AppText, BaseScroll } from '../components/Basic/Basic';
 import * as S from '../components/Basic/Basic.styled';
 import { DragAndSnap } from '../components/DragAndSnap/DragAndSnap';
 
@@ -10,11 +11,11 @@ export const HomeScreen = () => {
 
   return (
     <S.BasePage>
-      <S.BaseText>{t(`screen.${name}.title`)}</S.BaseText>
+      <AppText>{t(`screen.${name}.title`)}</AppText>
 
-      <S.BaseScroll contentContainerStyle={{ flex: 1 }}>
+      <BaseScroll>
         <DragAndSnap />
-      </S.BaseScroll>
+      </BaseScroll>
     </S.BasePage>
   );
 };

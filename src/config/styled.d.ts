@@ -1,4 +1,5 @@
 import 'styled-components';
+import { FontColor } from '../components/Basic/Basic.styled';
 
 declare module 'styled-components' {
   export interface DefaultTheme {
@@ -7,6 +8,6 @@ declare module 'styled-components' {
     searchBackgroundColor: string;
     focusedIconColor: string;
     unFocusedIconColor: string;
-    mainFont: string;
+    fontColors: { [index in FontColor]: string };
   }
 }
